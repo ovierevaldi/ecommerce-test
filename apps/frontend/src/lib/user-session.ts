@@ -28,7 +28,7 @@ export async function createSession(data: UserSession){
         httpOnly: true,
         secure: true,
         expires: expiredAt,
-        sameSite: 'lax',
+        sameSite: 'strict',
         path: '/'
     })
 }
@@ -46,4 +46,9 @@ export async function getSession(){
         console.log(error);
         redirect('/auth/')
     }
+}
+
+export async function deleteSession() {
+   const cookie = await cookies();
+    cookie.delete('session')
 }

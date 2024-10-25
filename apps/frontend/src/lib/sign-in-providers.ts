@@ -21,7 +21,7 @@ export const handleUserSignIn = async (signInProp: SignInProp, formData: FormDat
     const result = await signInUser(validationResult.data);
     if(!result?.isFailApi){
         await createSession(result?.data)
-        redirect('/')
+        redirect('/store')
     }
 }
 

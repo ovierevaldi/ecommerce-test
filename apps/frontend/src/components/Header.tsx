@@ -10,7 +10,6 @@ import React from 'react'
 // components
 import { Button } from "@/components/ui/button";
 
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,15 +20,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Image from 'next/image'
 import Link from 'next/link'
+import { getSession } from '@/lib/user-session'
 
-export default function Header() {
+export default async function Header() {
+  const userSession = await getSession();
+
   const itemCategories = [
     "Electronics",
     "Fashion",
     "Home & Garden",
     "Health & Beauty",
     "Sports & Outdoors",
-];
+  ];
 
   return (
     <div className='max-w-6xl mx-auto'>
@@ -39,35 +41,52 @@ export default function Header() {
         </div>
         <p className='text-3xl text-center p-5 font-semibold col-span-1 text-white'>Website Title</p>
 
-        <div className='col-span-1 text-right pr-4'>
-          <DropdownMenu>
-            <DropdownMenuTrigger> 
-              <div className='flex gap-x-2 rounded-md items-center text-white'>
-                <div className='rounded-full border p-3 bg-primary'>
-                  <Image src={cartIconWhite} alt='cart icon' height={25}></Image>
+          <div className='col-span-1 text-right pr-4'>
+            <DropdownMenu>
+              <DropdownMenuTrigger> 
+                <div className='flex gap-x-2 rounded-md items-center text-white'>
+                  <div className='rounded-full border p-2'>
+                    <Image src={userIconWhite} width={25} alt='account icon'/> 
+                  </div>
                 </div>
+              </DropdownMenuTrigger>
 
-                <div className='rounded-full border p-2'>
-                  <Image src={userIconWhite} width={25} alt='account icon'/> 
-                </div>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className='min-w-[180px] -translate-x-4 translate-y-1'>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className='p-2'>
-                <Link href={'/purchase-history/'}>
-                  <Image src={clockIcon} width={20} alt='account icon'/> <span> Purchase History</span> 
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem className='p-2'>
-                <Link href={'/purchase-history/'}>
-                  <Image src={powerIcon} width={20} alt='account icon'/> <span> Log Out</span>
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+             {
+              userSession && 
+              <DropdownMenuContent className='min-w-[180px] -translate-x-4 translate-y-1'>
+                <DropdownMenuLabel className='text-base font-normal'>Hello, {userSession.username}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className='px-2 pb-4'>
+                  <Link href={'/api/auth/sign-out'}>
+                    <div className='flex gap-x-2'>
+                      <Image src={powerIcon} width={18} alt='account icon'/> 
+                      <span> Log Out</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+             }
+
+            {
+              !userSession && 
+              <DropdownMenuContent className='min-w-[180px] -translate-x-4 translate-y-1'>
+                <DropdownMenuItem className='px-2 pb-4'>
+                  <Link href={'/auth'}>
+                    <div className='flex gap-x-2'>
+                      <Image src={powerIcon} width={18} alt='account icon'/> 
+                      <span> Sign In</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            }
+
+            </DropdownMenu>
+
+            {/* <div className='rounded-full border p-3 bg-primary'>
+              <Image src={cartIconWhite} alt='cart icon' height={25}></Image>
+            </div> */}
+          </div>
       </div>
       <div className="flex justify-around p-4 border-b mb-4">
             {
