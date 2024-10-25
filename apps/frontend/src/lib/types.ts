@@ -19,8 +19,9 @@ export type SignInProp = {
         username?: string[],
         password?: string[],
     },
-    success?: boolean,
-    message?: string
+    isFailApi?: boolean,
+    message?: string,
+    data?: any
 } | undefined
 
 

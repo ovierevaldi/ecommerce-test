@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { PrismaService } from 'src/prisma/prisma.service';
 import { verifyPassword } from 'lib/hashPassword';
 import { JwtService } from '@nestjs/jwt';
-import { UserPayload } from 'src/types/types';
 
 @Injectable()
 export class AuthService {

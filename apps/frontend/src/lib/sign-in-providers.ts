@@ -1,9 +1,12 @@
 'use server'
 
 import { redirect } from "next/navigation";
-import { SignInProp, SignInZodSchema, SignUpProp } from "./types"
+import { SignInProp, SignInZodSchema,  } from "./types"
 
-export const handleUserSignIn = async (signInProp: SignUpProp, formData: FormData):Promise<SignInProp> => {
+import jwt from 'jsonwebtoken'
+import { createSession } from "./user-session";
+
+export const handleUserSignIn = async (signInProp: SignInProp, formData: FormData):Promise<SignInProp> => {
     
     const signInData = {
         username: formData.get('username'),
@@ -16,22 +19,22 @@ export const handleUserSignIn = async (signInProp: SignUpProp, formData: FormDat
     }
     
     const result = await signInUser(validationResult.data);
-
-    // if(result)
-    //     redirect('/auth/')
+    if(!result?.isFailApi){
+        await createSession(result?.data)
+        redirect('/')
+    }
 }
 
-async function signInUser(data: {username: string, password: string}): Promise<SignUpProp>{
+async function signInUser(data: {username: string, password: string}): Promise<SignInProp>{
     const axios = require('axios');
     try {
         const response = await axios.post('http://localhost:3000/auth', {
             username: data.username,
             password: data.password
         })
-        
-        return {onSuccess: {isSuccess: true, data: response.data.acesss_token}, message: 'Success Login User'}
-    } catch (error) {
-        console.log(error)
-        return {onSuccess: {isSuccess: false}, message: 'Cannot Login User with error: ' + error}
+        return {isFailApi: false, message: 'Success Login User', data: response.data}
+    } 
+    catch (error) {
+        return {isFailApi: true, message: 'Cannot Login User'}
     }
 }
