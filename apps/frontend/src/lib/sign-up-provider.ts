@@ -1,8 +1,7 @@
 'use server'
 
+import { redirect } from "next/navigation";
 import { SignUpProp, SignUpZodSchema } from "./types"
-
-// const axios = require('axios');
 
 export const handleUserSignUp = async (signUpProp: SignUpProp, formData: FormData):Promise<SignUpProp> => {
     
@@ -10,28 +9,30 @@ export const handleUserSignUp = async (signUpProp: SignUpProp, formData: FormDat
         username: formData.get('username'),
         fullname: formData.get('fullname'),
         password: formData.get('password'),
-        termsandcondition: formData.get('termsandcondition')
     }
 
     const validationResult = SignUpZodSchema.safeParse(signUpData);
 
-    console.log(formData.get('termsandcondition'))
-
     if(!validationResult.success){
         return {error: validationResult.error.flatten().fieldErrors};
     }
+    
+    const result = await registerUser(validationResult.data);
+
+    if(result)
+        redirect('/auth/')
 }
 
-// async function registerUser(){
-//     console.log(username, password, fullName)
-//     try {
-//         const response = await axios.post('http://localhost:3000/user', {
-//             username: username,
-//             fullname: fullName,
-//             password: password
-//         })
-//         console.log(response)
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
+async function registerUser(data: {username: string, fullname: string, password: string}): Promise<SignUpProp>{
+    const axios = require('axios');
+    try {
+        await axios.post('http://localhost:3000/user', {
+            username: data.username,
+            fullname: data.fullname,
+            password: data.password
+        })
+        return {success: true, message: 'Success Registering User'}
+    } catch (error) {
+        return {success: false, message: 'Cannot Create User with error: ' + error}
+    }
+}

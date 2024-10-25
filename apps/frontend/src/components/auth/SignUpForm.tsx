@@ -3,13 +3,12 @@
 import React, { useActionState } from 'react'
 
 //Components
-import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
-import RegisterButton from './RegisterButton'
 import { handleUserSignUp } from '@/lib/sign-up-provider'
+import FormButton from './FormButton'
 
 export default function SignUpForm() {
-    const [state, signUp] = useActionState(handleUserSignUp, undefined)
+    const [state, signUp] = useActionState(handleUserSignUp, undefined);
 
     return (
         <form 
@@ -65,7 +64,7 @@ export default function SignUpForm() {
                 }
             </div>
 
-            <RegisterButton>Register</RegisterButton>
+            <FormButton>Register</FormButton>
         </form>
     )
 }

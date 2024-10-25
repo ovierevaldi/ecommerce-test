@@ -5,6 +5,9 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 
+import toast, { Toaster } from 'react-hot-toast';
+
+
 // Components
 import Header from "@/components/Header";
 import { Input } from "@/components/ui/input";
@@ -41,6 +44,7 @@ export default function RootLayout({
       <body
         className={`${robotoFont.className}`}
       >
+        <Toaster />
         {/* <ShopAlert></ShopAlert> */}
         {/* <Header />
         <div className="max-w-6xl mx-auto">

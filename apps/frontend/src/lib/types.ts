@@ -6,8 +6,20 @@ export type SignUpProp = {
         fullname?: string[],
         password?: string[],
     },
+    success?: boolean,
     message?: string
 } | undefined
+
+
+export type SignInProp = {
+    error? : {
+        username?: string[],
+        password?: string[],
+    },
+    success?: boolean,
+    message?: string
+} | undefined
+
 
 export const SignUpZodSchema = z.object({
     username: z
@@ -26,5 +38,5 @@ export const SignUpZodSchema = z.object({
 
     password: z
     .string()
-    .min(8, {message: 'Please enter a minimum 8 character for fullname'}),
+    .min(8, {message: 'Please enter a minimum 8 character for password'}),
 })
