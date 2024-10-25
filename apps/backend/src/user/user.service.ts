@@ -1,17 +1,18 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { hashPassword } from 'lib/hashPassword';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
-  constructor(private prismaService: PrismaService){
+  constructor(private prismaService: PrismaService, private jwtService: JwtService){
   }
 
   async create(createUserDto:  CreateUserDto): Promise<User>{
-    const User = this.prismaService.admin.findFirst({where: {username: createUserDto.username}})
+    const User = await this.prismaService.admin.findUnique({where: {username: createUserDto.username}})
 
     if(User)
       throw new ConflictException('username already exsist')

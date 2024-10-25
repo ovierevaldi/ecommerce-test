@@ -30,9 +30,10 @@ async function registerUser(data: {username: string, fullname: string, password:
             username: data.username,
             fullname: data.fullname,
             password: data.password
-        })
-        return {success: true, message: 'Success Registering User'}
+        });
+        console.log('dajkdlald')
+        return {onSuccess: {isSuccess: true}, message: 'Success Registering User'}
     } catch (error) {
-        return {success: false, message: 'Cannot Create User with error: ' + error}
+        return {onSuccess: {isSuccess: false}, message: 'Cannot Create User with error: ' + error}
     }
 }

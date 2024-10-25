@@ -12,7 +12,7 @@ export class AdminService {
 
   async create(createAdminDto: CreateAdminDto): Promise<Admin> {
 
-    const User = this.prismaService.admin.findFirst({where: {username: createAdminDto.username}})
+    const User = await this.prismaService.admin.findFirst({where: {username: createAdminDto.username}})
 
     if(User)
       throw new ConflictException('username already exsist')
