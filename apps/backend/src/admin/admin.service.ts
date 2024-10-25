@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -12,13 +12,18 @@ export class AdminService {
 
   async create(createAdminDto: CreateAdminDto): Promise<Admin> {
 
+    const User = this.prismaService.admin.findFirst({where: {username: createAdminDto.username}})
+
+    if(User)
+      throw new ConflictException('username already exsist')
+
     const hashedPassword = await hashPassword(createAdminDto.password);
     if(!hashedPassword)
         throw InternalServerErrorException
 
-    const User = {...createAdminDto, password: hashedPassword}
+    const NewUser = {...createAdminDto, password: hashedPassword}
 
-    return await this.prismaService.admin.create({data: User})
+    return await this.prismaService.admin.create({data: NewUser})
   }
 
   async findAll(): Promise<Admin[]> {

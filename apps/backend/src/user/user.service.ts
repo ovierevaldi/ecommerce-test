@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -11,12 +11,17 @@ export class UserService {
   }
 
   async create(createUserDto:  CreateUserDto): Promise<User>{
+    const User = this.prismaService.admin.findFirst({where: {username: createUserDto.username}})
+
+    if(User)
+      throw new ConflictException('username already exsist')
+
     const hashedPassword = await hashPassword(createUserDto.password);
     if(!hashedPassword)
         throw InternalServerErrorException
 
-    const User = {...createUserDto, password: hashedPassword}
-    return await this.prismaService.user.create({data: User})
+    const NewUser = {...createUserDto, password: hashedPassword}
+    return await this.prismaService.user.create({data: NewUser})
   }
 
   async findAll(): Promise<User[]>{
