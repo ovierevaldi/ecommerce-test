@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,7 +13,7 @@ export class UserService {
   async create(createUserDto:  CreateUserDto): Promise<User>{
     const hashedPassword = await hashPassword(createUserDto.password);
     if(!hashedPassword)
-        throw NotFoundException
+        throw InternalServerErrorException
 
     const User = {...createUserDto, password: hashedPassword}
     return await this.prismaService.user.create({data: User})

@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Admin } from '@prisma/client';
+import { hashPassword } from 'lib/hashPassword';
 
 @Injectable()
 export class AdminService {
@@ -10,7 +11,14 @@ export class AdminService {
   {}
 
   async create(createAdminDto: CreateAdminDto): Promise<Admin> {
-    return await this.prismaService.admin.create({data: createAdminDto})
+
+    const hashedPassword = await hashPassword(createAdminDto.password);
+    if(!hashedPassword)
+        throw InternalServerErrorException
+
+    const User = {...createAdminDto, password: hashedPassword}
+
+    return await this.prismaService.admin.create({data: User})
   }
 
   async findAll(): Promise<Admin[]> {

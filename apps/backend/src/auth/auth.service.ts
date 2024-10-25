@@ -9,16 +9,30 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
     constructor(private prismaService: PrismaService, private jwtService: JwtService){}
 
-    async signIn(signInData: SignInDto): Promise<{access_token: string}>{
-        const userData = await this.prismaService.user.findUnique({where: {username: signInData.username}});
+    async signIn(signInData: SignInDto, userType? : string): Promise<{access_token: string}>{
+        
+        // Check if the sign in method is for Admin (Code: A)
+        let userData = null;
+        if(userType === 'A'){
+            userData = await this.prismaService.admin.findUnique({where: {username: signInData.username}});
+        }
+        else{
+            userData = await this.prismaService.user.findUnique({where: {username: signInData.username}});
+        }
+
+        if(!userData){
+            throw UnauthorizedException;
+        }
 
         const passMatch = await verifyPassword(userData.password, signInData.password);
         if(!passMatch)
             throw UnauthorizedException;
 
-        const { password, ...user } = userData;
-        const accessToken = await this.jwtService.signAsync(user);
+        const { password, id, ...user } = userData;
+        const updatedUser = {...user, sub: id}
+        
+        const accessToken = await this.jwtService.signAsync(updatedUser);
 
-        return {access_token: accessToken} 
+        return {access_token: accessToken};
     }
 }
